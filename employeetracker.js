@@ -1,6 +1,7 @@
 const inquirer = require("inquirer");
 const mysql = require("mysql");
 const cTable = require("console.table");
+const logo = require("asciiart-logo");
 
 const connection = mysql.createConnection({
   host: "localhost",
@@ -9,6 +10,22 @@ const connection = mysql.createConnection({
   password: "Blessing@16",
   database: "employee_trackerDB",
 });
+
+console.log(
+  logo({
+    name: "Employee Manager",
+    font: "AMC Razor",
+    lineChars: 10,
+    padding: 2,
+    margin: 3,
+    borderColor: "cyan",
+    logoColor: "bold-red",
+    textColor: "red",
+  })
+    .emptyLine()
+    .emptyLine()
+    .render()
+);
 
 const start = () => {
   inquirer
@@ -70,6 +87,7 @@ const start = () => {
 
 //functions
 const viewEmployees = () => {
+  //need left join
   connection.query("SELECT * FROM employee", (err, res) => {
     if (err) throw err;
     console.table(res);
@@ -77,8 +95,10 @@ const viewEmployees = () => {
   });
 };
 
+//inner join employee and department
 const employeeByDepartment = () => {};
 
+//inner join employee and role
 const employeeByManager = () => {};
 
 const addEmployee = () => {
@@ -139,7 +159,7 @@ const removeEmployee = () => {
       .then((answer) => {
         let parts = answer.action.split(" ");
         let chosenId = parts[0];
-        connection.query("DELETE FROM employee WHERE id = ?",chosenId);
+        connection.query("DELETE FROM employee WHERE id = ?", chosenId);
         start();
       });
   });
