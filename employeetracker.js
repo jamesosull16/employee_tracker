@@ -35,12 +35,16 @@ const start = () => {
       message: "What would you like to do?",
       choices: [
         "View all Employees",
-        "View Employees by Department",
-        "View Employees by Manager",
+        "View all Departments",
+        "View all Roles",
         "Add an Employee",
-        "Remove Employee",
+        "Add a Department",
+        "Add a Role",
         "Update Employee Role",
+        "View Employees by Department",
         "Update Employee Manager",
+        "View Employees by Manager",
+        "Remove Employee",
         "Exit",
       ],
     })
@@ -50,28 +54,44 @@ const start = () => {
           viewEmployees();
           break;
 
-        case "View Employees by Department":
-          employeeByDepartment();
+        case "View all Departments":
+          viewDepartments();
           break;
 
-        case "View Employees by Manager":
-          employeeByManager();
+        case "View all Roles":
+          viewRoles();
           break;
 
-        case "Add and Employee":
+        case "Add an Employee":
           addEmployee();
           break;
 
-        case "Remove Employee":
-          removeEmployee();
+        case "Add a Department":
+          addDepartment();
+          break;
+
+        case "Add a Role":
+          addRole();
           break;
 
         case "Update Employee Role":
           updateRole();
           break;
 
+        case "View Employees by Department":
+          employeeByDepartment();
+          break;
+
         case "Update Employee Manager":
           updateManager();
+          break;
+
+        case "View Employees by Manager":
+          employeeByManager();
+          break;
+
+        case "Remove Employee":
+          removeEmployee();
           break;
 
         case "Exit":
@@ -86,8 +106,8 @@ const start = () => {
 };
 
 //functions
+//need left join
 const viewEmployees = () => {
-  //need left join
   connection.query("SELECT * FROM employee", (err, res) => {
     if (err) throw err;
     console.table(res);
@@ -95,42 +115,88 @@ const viewEmployees = () => {
   });
 };
 
-//inner join employee and department
-const employeeByDepartment = () => {};
+//need left join
+const viewDepartments = () => {
+  connection.query("SELECT * FROM department", (err, res) => {
+    if (err) throw err;
+    console.table(res);
+    start();
+  });
+};
+
+//need left join
+const viewRoles = () => {
+  connection.query("SELECT * FROM role", (err, res) => {
+    if (err) throw err;
+    console.table(res);
+    start();
+  });
+};
+
+//INSERT INTO
+//still needs work
+const addEmployee = () => {
+  connection.query("SELECT * FROM role", (err, results) => {
+    if (err) throw err;
+    inquirer
+      .prompt([
+        {
+          type: "input",
+          message: "What is the employees first name?",
+          name: "employee_firstName",
+        },
+        {
+          type: "input",
+          message: "What is the employees last name?",
+          name: "employee_lastName",
+        },
+        {
+          name: "action",
+          type: "list",
+          choices() {
+            const choiceArray = [];
+            results.forEach((roles) => {
+              let employeeRole = roles.title;
+              choiceArray.push(employeeRole);
+            });
+            return choiceArray;
+          },
+          message: "What is the employee's role?",
+        },
+      ])
+      .then((answer) => {
+        connection.query("INSERT INTO employee SET ?"),
+        {
+          first_name = answer.employee_firstName,
+          last_name = answer.employee_lastName,
+          role_id = answer.action,
+          manager_id = answer.manager,
+        },
+        (err) => {
+          if (err) throw err;
+          console.log('The new employee has been added to the team!');
+          start();
+        }
+      });
+  });
+};
+
+//INSERT INTO
+const addDepartment = () => {};
+
+//INSERT INTO
+const addRole = () => {};
+
+//UPDATE SET
+const updateRole = () => {};
+
+const updateManager = () => {};
 
 //inner join employee and role
 const employeeByManager = () => {};
 
-const addEmployee = () => {
-  inquirer.prompt([
-    {
-      type: "input",
-      message: "What is the employees first name?",
-      name: "employee_firstName",
-    },
-    {
-      type: "inptut",
-      message: "What is the employees last name?",
-      name: "employee_lastName",
-    },
-    {
-      type: "list",
-      message: "What is the employees role?",
-      name: "role",
-      choices: [
-        "Intern",
-        "Software Engineer",
-        "Engineering Manager",
-        "Software Test Engineer",
-        "Software Test Manager",
-        "Sales Development Representative",
-        "Sales Manager",
-        "Customer Service Representative",
-        "Customer Service Manager",
-      ],
-    },
-  ]);
-};
+//inner join employee and department
+const employeeByDepartment = () => {};
 
 const removeEmployee = () => {
   connection.query("SELECT * FROM employee", (err, res) => {
@@ -164,10 +230,6 @@ const removeEmployee = () => {
       });
   });
 };
-
-const updateRole = () => {};
-
-const updateManager = () => {};
 
 connection.connect((err) => {
   if (err) throw err;
