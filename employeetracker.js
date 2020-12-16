@@ -72,13 +72,7 @@ const start = () => {
 const viewEmployees = () => {
   connection.query("SELECT * FROM employee", (err, res) => {
     if (err) throw err;
-    cTable(res, [
-      { id },
-      { first_name },
-      { last_name },
-      { role_id },
-      { manager_id },
-    ]);
+    console.table(res);
     start();
   });
 };
@@ -128,10 +122,14 @@ const removeEmployee = () => {
           type: "list",
           choices() {
             const actionArray = [];
-            //need to have the first and last name in a string be presented as the choices
-            const employees = JSON.stringify("first_name" + "last_name");
             res.forEach((employees) => {
-              actionArray.push(employees);
+              let fullName =
+                employees.id +
+                " " +
+                employees.first_name +
+                " " +
+                employees.last_name;
+              actionArray.push(fullName);
             });
             return actionArray;
           },
@@ -139,10 +137,9 @@ const removeEmployee = () => {
         },
       ])
       .then((answer) => {
-        let chosenOne;
-        connection.query("DELETE FROM employee WHERE ?", {
-          chosenOne: answer.choice,
-        });
+        let parts = answer.action.split(" ");
+        let chosenId = parts[0];
+        connection.query("DELETE FROM employee WHERE id = ?",chosenId);
         start();
       });
   });
