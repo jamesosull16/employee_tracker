@@ -40,7 +40,7 @@ const start = () => {
         "Add an Employee",
         "Add a Department",
         "Add a Role",
-        "Update Employee Role",
+        "Update Employee by Role",
         "View Employees by Department",
         "Update Employee Manager",
         "View Employees by Manager",
@@ -74,8 +74,8 @@ const start = () => {
           addRole();
           break;
 
-        case "Update Employee Role":
-          updateRole();
+        case "Update Employee by Role":
+          updateEmployeeRole();
           break;
 
         case "View Employees by Department":
@@ -106,16 +106,18 @@ const start = () => {
 };
 
 //functions
-//need left join
+
 const viewEmployees = () => {
-  connection.query("SELECT * FROM employee", (err, res) => {
-    if (err) throw err;
-    console.table(res);
-    start();
-  });
+  connection.query(
+    "SELECT employee.id, employee.first_name, employee.last_name, role.title, role.salary, department.name AS department, manager.last_name AS manager FROM employee LEFT JOIN role ON employee.role_id = role.id LEFT JOIN department ON role.department_id = department.id LEFT JOIN employee manager ON employee.manager_id = manager.id",
+    (err, res) => {
+      if (err) throw err;
+      console.table(res);
+      start();
+    }
+  );
 };
 
-//need left join
 const viewDepartments = () => {
   connection.query("SELECT * FROM department", (err, res) => {
     if (err) throw err;
@@ -124,79 +126,146 @@ const viewDepartments = () => {
   });
 };
 
-//need left join
 const viewRoles = () => {
-  connection.query("SELECT * FROM role", (err, res) => {
-    if (err) throw err;
-    console.table(res);
-    start();
-  });
+  connection.query(
+    "SELECT role.id, role.title, role.salary, department.name AS department FROM role LEFT JOIN department ON role.department_id = department.id",
+    (err, res) => {
+      if (err) throw err;
+      console.table(res);
+      start();
+    }
+  );
 };
 
 //INSERT INTO
 //still needs work
 const addEmployee = () => {
-  connection.query("SELECT * FROM role", (err, results) => {
+  connection.query("SELECT * FROM employee", (err, results) => {
+    if (err) throw err;
+    inquirer.prompt([
+      {
+        name: "fist",
+        type: "input",
+        message: "What is the new employees first name?",
+      },
+      {
+        name: "last",
+        type: "input",
+        message: "What is the new employees last name?",
+      },
+      {
+        name: "action",
+        type: "list",
+        choices: results.map((department) => ({
+          name: department.name,
+          value: department,
+        })),
+        message: "What department does this new employee belong in?",
+      },
+    ]);
+  });
+};
+
+const addDepartment = () => {
+  inquirer
+    .prompt([
+      {
+        name: "dept",
+        type: "input",
+        message: "What department would you like to add the organization?",
+      },
+    ])
+    .then((answer) => {
+      connection.query(
+        "INSERT INTO department SET ?",
+        { name: answer.dept },
+        (err) => {
+          if (err) throw err;
+          console.log(`${answer.dept} has been added to the org!`);
+          viewDepartments();
+          start();
+        }
+      );
+    });
+};
+
+//INSERT INTO
+const addRole = () => {
+  connection.query("SELECT * FROM department", (err, results) => {
     if (err) throw err;
     inquirer
       .prompt([
         {
+          name: "title",
           type: "input",
-          message: "What is the employees first name?",
-          name: "employee_firstName",
+          message: "What is the new role you would like to add?",
         },
         {
+          name: "salary",
           type: "input",
-          message: "What is the employees last name?",
-          name: "employee_lastName",
+          message: "What is the base salary for this new position?",
+          validate(value) {
+            if (isNaN(value) === false) {
+              return true;
+            }
+            return false;
+          },
         },
         {
           name: "action",
           type: "list",
-          choices() {
-            const choiceArray = [];
-            results.forEach((roles) => {
-              let employeeRole = roles.title;
-              choiceArray.push(employeeRole);
-            });
-            return choiceArray;
-          },
-          message: "What is the employee's role?",
+          choices: results.map((department) => ({
+            name: department.name,
+            value: department,
+          })),
+          message: "What department does this new role belong in?",
         },
+        
       ])
       .then((answer) => {
-        connection.query("INSERT INTO employee SET ?"),
-        {
-          first_name = answer.employee_firstName,
-          last_name = answer.employee_lastName,
-          role_id = answer.action,
-          manager_id = answer.manager,
-        },
-        (err) => {
-          if (err) throw err;
-          console.log('The new employee has been added to the team!');
-          start();
-        }
+        connection.query(
+          "INSERT INTO role SET ?",
+          {
+            title: answer.title,
+            salary: answer.salary,
+            department_id: answer.action.id,
+          },
+          (err) => {
+            if (err) throw err;
+            console.log(
+              `${answer.title} has been added to ${answer.action.name}!`
+            );
+            viewRoles();
+            start();
+          }
+        );
       });
   });
 };
-
-//INSERT INTO
-const addDepartment = () => {};
-
-//INSERT INTO
-const addRole = () => {};
-
 //UPDATE SET
-const updateRole = () => {};
+const updateEmployeeRole = () => {
+  const query = "SELECT * FROM employee";
+  //select * employees as choices
+  //select * roles as choices
+  // UPDATE employee SET role_id = ? WHERE id = ?
+  //pass an array for the question marks...one for role_id and other for id
+};
 
-const updateManager = () => {};
+const updateManager = () => {
+  console.log("Still under construction!");
+  start();
+};
 
 //inner join employee and role
-const employeeByManager = () => {};
+const employeeByManager = () => {
+  console.log("Still under construction!");
+};
 
 //inner join employee and department
-const employeeByDepartment = () => {};
+const employeeByDepartment = () => {
+  console.log("Still under construction!");
+  start();
+};
 
 const removeEmployee = () => {
   connection.query("SELECT * FROM employee", (err, res) => {
@@ -226,6 +295,8 @@ const removeEmployee = () => {
         let parts = answer.action.split(" ");
         let chosenId = parts[0];
         connection.query("DELETE FROM employee WHERE id = ?", chosenId);
+        let fired = parts.splice(1).join(" ");
+        console.log(`${fired} has been fired!`);
         start();
       });
   });
