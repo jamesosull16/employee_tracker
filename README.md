@@ -1,6 +1,6 @@
 # Employee Tracker Command Line Database
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
----
+
+## [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ## Description
 
@@ -10,24 +10,24 @@ A simple command line application allowing the user to manage their employee dat
 
 ## Table of Contents
 
-* [Installation](#installation)
+- [Installation](#installation)
 
-* [Usage](#usage)
+- [Usage](#usage)
 
-* [License](#license)
+- [License](#license)
 
-* [Contributing](#contributing)
+- [Contributing](#contributing)
 
-* [Tests](#tests)
+- [Tests](#tests)
 
 ---
 
 ## Installation
 
 Cloning or forking the project through github and running it through an IDE would be the best course of action to install and run the application.
-```
 
 ---
+
 ## Usage
 
 Simply open up the project in your prefered IDE and run the generateMarkdown.js file.
@@ -48,7 +48,9 @@ I am not currently looking for any contributions to this poject.
 
 ## Tests
 
-No test were created or ran for this project.  It was tested by running the code.
+No test were created or ran for this project. It was tested by running the code.
+
 ```
 
-  
+
+```
