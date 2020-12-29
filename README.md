@@ -20,6 +20,8 @@ A simple command line application allowing the user to manage their employee dat
 
 - [Tests](#tests)
 
+- [Links](#links)
+
 ---
 
 ## Installation
@@ -50,7 +52,10 @@ I am not currently looking for any contributions to this poject.
 
 No test were created or ran for this project. It was tested by running the code.
 
-```
+## Links
 
+[Demo Video](https://drive.google.com/file/d/1pCc_wXWQjEhDXfFFZu6_ujn9M-CRgSCt/view)
+
+```
 
 ```
