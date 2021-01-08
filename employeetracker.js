@@ -1,13 +1,14 @@
+require("dotenv").config();
 const inquirer = require("inquirer");
 const mysql = require("mysql");
 const cTable = require("console.table");
 const logo = require("asciiart-logo");
 
 const connection = mysql.createConnection({
-  host: "localhost",
+  host: process.env.DB_HOST,
   port: 3306,
-  user: "root",
-  password: "Blessing@16",
+  user: process.env.DB_USER,
+  password: process.env.DB_PASS,
   database: "employee_trackerDB",
 });
 
